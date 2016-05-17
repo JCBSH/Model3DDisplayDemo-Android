@@ -7,11 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
+
+    private TextView mCurrentMode;
 
     public static Fragment getInstance() {
 
@@ -40,6 +43,38 @@ public class MainActivityFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        mCurrentMode = (TextView) v.findViewById(R.id.mode_textView);
+        switch (Model3D.sMode) {
+            case Model3D.SINGLE_THREAD:
+                mCurrentMode.setText("single thread");
+                break;
+            case Model3D.MULTI_THREAD:
+                mCurrentMode.setText("multi thread");
+                break;
+        }
+
+
+        Button singleThreadButton = (Button) v.findViewById(R.id.single_thread_button);
+        singleThreadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Model3D.sMode = Model3D.SINGLE_THREAD;
+                mCurrentMode.setText("single thread");
+
+            }
+        });
+
+        Button multiThreadButton = (Button) v.findViewById(R.id.multi_thread_button);
+        multiThreadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Model3D.sMode = Model3D.MULTI_THREAD;
+                mCurrentMode.setText("multi thread");
+            }
+        });
+
+
 
         return v;
     }

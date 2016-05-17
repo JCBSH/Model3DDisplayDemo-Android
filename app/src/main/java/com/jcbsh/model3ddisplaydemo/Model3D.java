@@ -72,7 +72,9 @@ public class Model3D {
     private Object mSyncObject = new Object();
     private int mTaskCount = 0;
 
-    private static boolean MULTI_THREAD_FLAG = true;
+    public static final int SINGLE_THREAD = 0;
+    public static final int MULTI_THREAD = 1;
+    public static int sMode = MULTI_THREAD;
 
 
 
@@ -93,7 +95,9 @@ public class Model3D {
         try {
 
             //////////------------------------//////////
-            if (MULTI_THREAD_FLAG) {
+
+
+            if (sMode == MULTI_THREAD) {
                 // Open and read the file into a StringBuilder
                 InputStream in = context.getAssets().open("assassin.ply");
                 reader = new BufferedReader(new InputStreamReader(in));
@@ -186,7 +190,7 @@ public class Model3D {
         }
 
 
-        if (MULTI_THREAD_FLAG) {
+        if (sMode == MULTI_THREAD) {
             synchronized (mSyncObject) {
                 while (mProcessedVertexCount != MAX_NUM_OF_VERTEX) {
                     try {

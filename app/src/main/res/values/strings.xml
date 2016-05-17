@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">Model3DDisplayDemo</string>
     <string name="model_button">display model</string>
+    <string name="instructions">
+        --instructions--\n
+        x-axis rotation: one finger swipe top to bottom\n
+        y-axis rotation: one finger swipe left to right\n
+        z-axis rotation: two finger rotate in circular motion\n
+        reset: double tap\n
+        moving camera: two finger swipe\n
+        zoom: two finger pinch
+    </string>
+    <string name="single_thread_button">single\nthread</string>
+    <string name="multi_thread_button">Multi\nthread</string>
 </resources>
