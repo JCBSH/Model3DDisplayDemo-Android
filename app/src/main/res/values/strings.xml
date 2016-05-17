@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Model3DDisplayDemo</string>
+    <string name="model_button">display model</string>
+</resources>
