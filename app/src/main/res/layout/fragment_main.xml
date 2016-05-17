@@ -33,7 +33,7 @@
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="About 90sec"/>
+                    android:text="About 22sec on nexus 5X"/>
             </LinearLayout>
 
             <LinearLayout
@@ -50,7 +50,7 @@
                     android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="About 9sec"/>
+                    android:text="About 9sec on nexus 5X"/>
             </LinearLayout>
 
 

@@ -150,7 +150,7 @@ public class Model3D {
                     String[] strings = line.split(" ");
 
                     if (vertexCount >= MAX_NUM_OF_VERTEX) break;
-                    if (strings.length > 6) {
+                    if (strings.length >= 6) {
                         //Log.d("Model3D", line);
                         int i = vertexCount * 3;
                         if (!strings[0].equalsIgnoreCase("nan")) {
