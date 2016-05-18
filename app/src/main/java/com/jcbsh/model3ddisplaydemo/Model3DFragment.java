@@ -1,5 +1,6 @@
 package com.jcbsh.model3ddisplaydemo;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.opengl.GLES20;
@@ -8,7 +9,8 @@ import android.opengl.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.Nullable;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +28,12 @@ public class Model3DFragment extends Fragment{
     private static final int ZOOM_MODE = 1;
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
+    private final UiHandler mUiHandler = new UiHandler(Looper.getMainLooper());
+
+    interface FragmentCallback {
+        public void setPBarVisibility(boolean b);
+        public boolean isPBarVisibility();
+    }
 
     public static Fragment getInstance() {
         Fragment fragment = new Model3DFragment();
@@ -33,7 +41,14 @@ public class Model3DFragment extends Fragment{
     }
 
 
+    protected FragmentCallback mFragmentCallback;
     private Model3D mModel3D;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mFragmentCallback = (FragmentCallback) activity;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,14 +59,51 @@ public class Model3DFragment extends Fragment{
 
     private GLSurfaceView mGLSurfaceView;
 
-
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mGLSurfaceView = new MyGLSurfaceView(getActivity(), mBackgroundHandler);
         return mGLSurfaceView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        openBackgroundThread();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        closeBackgroundThread();
+
+
+    }
+
+    protected void openBackgroundThread() {
+        mBackgroundThread =  new HandlerThread("background thread");
+        mBackgroundThread.start();
+        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+    }
+
+    protected void closeBackgroundThread() {
+
+        mBackgroundThread.quit();
+        try {
+            mBackgroundThread.join();
+            mBackgroundThread = null;
+            mBackgroundHandler = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mFragmentCallback = null;
+    }
 
     public class MyGLSurfaceView extends GLSurfaceView {
 
@@ -269,42 +321,6 @@ public class Model3DFragment extends Fragment{
     }
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        openBackgroundThread();
-    }
-
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        closeBackgroundThread();
-
-
-    }
-
-    protected void openBackgroundThread() {
-        mBackgroundThread =  new HandlerThread("background thread");
-        mBackgroundThread.start();
-        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-    }
-
-    protected void closeBackgroundThread() {
-
-        mBackgroundThread.quit();
-        try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
-            mBackgroundHandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
     public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         private final Handler mHandler;
@@ -481,7 +497,13 @@ public class Model3DFragment extends Fragment{
             //mTriangle = new Triangle();
             if (mModel3D == null) {
                 Log.d("onCreateView", "mModel3D == null");
+
+                Message bitmapMessage = mUiHandler.obtainMessage(Model3DFragment.WHAT_PROGRESS_VISIBLE, true);
+                bitmapMessage.sendToTarget();
                 mModel3D = new Model3D(getActivity());
+
+                bitmapMessage = mUiHandler.obtainMessage(Model3DFragment.WHAT_PROGRESS_VISIBLE, false);
+                bitmapMessage.sendToTarget();
             }
 
 
@@ -553,5 +575,33 @@ public class Model3DFragment extends Fragment{
         public void reset() {
             mViewMatrixInitializationFlag = true;
         }
+
+
     }
+
+
+    public static final int WHAT_PROGRESS_PERCENTAGE = 0;
+    public static final int WHAT_PROGRESS_VISIBLE= 1;
+    private class UiHandler extends Handler {
+        public UiHandler(Looper mainLooper) {
+            super(mainLooper);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case WHAT_PROGRESS_PERCENTAGE:
+
+
+                    break;
+
+                case WHAT_PROGRESS_VISIBLE:
+                    boolean flag = (Boolean) msg.obj;
+                    mFragmentCallback.setPBarVisibility(flag);
+                    break;
+            }
+        }
+    }
+
 }

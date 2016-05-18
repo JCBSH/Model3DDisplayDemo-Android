@@ -340,7 +340,7 @@ public class Model3D {
         protected Void doInBackground(ArrayList<String>... params) {
             lines = params[0];
             for (String line:lines) {
-                String[] strings = line.split(" ");
+                String[] strings = line.split(" ", 7);
                 //Log.d("Model3D", line);
                 int i = vertexNum * 3;
                 boolean flag = true;
