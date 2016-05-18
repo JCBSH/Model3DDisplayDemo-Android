@@ -28,17 +28,13 @@
                 style="@style/MyTheme"
 
                 android:textColor="@android:color/holo_blue_light"
-                android:text="100%"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>
             <ProgressBar
                 android:id="@+id/percentage_bar"
                 style="?android:attr/progressBarStyleHorizontal"
-
-
                 android:indeterminate="false"
-                android:progress="50"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>

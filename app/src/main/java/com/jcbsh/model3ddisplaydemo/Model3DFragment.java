@@ -33,6 +33,7 @@ public class Model3DFragment extends Fragment{
     interface FragmentCallback {
         public void setPBarVisibility(boolean b);
         public boolean isPBarVisibility();
+        public void setProgressPercentage(int p);
     }
 
     public static Fragment getInstance() {
@@ -69,6 +70,7 @@ public class Model3DFragment extends Fragment{
     public void onResume() {
         super.onResume();
         openBackgroundThread();
+        mFragmentCallback.setPBarVisibility(false);
     }
 
 
@@ -500,7 +502,7 @@ public class Model3DFragment extends Fragment{
 
                 Message bitmapMessage = mUiHandler.obtainMessage(Model3DFragment.WHAT_PROGRESS_VISIBLE, true);
                 bitmapMessage.sendToTarget();
-                mModel3D = new Model3D(getActivity());
+                mModel3D = new Model3D(getActivity(), mUiHandler);
 
                 bitmapMessage = mUiHandler.obtainMessage(Model3DFragment.WHAT_PROGRESS_VISIBLE, false);
                 bitmapMessage.sendToTarget();
@@ -592,8 +594,8 @@ public class Model3DFragment extends Fragment{
             super.handleMessage(msg);
             switch (msg.what) {
                 case WHAT_PROGRESS_PERCENTAGE:
-
-
+                    double percentage = (double) msg.obj;
+                    mFragmentCallback.setProgressPercentage((int) percentage);
                     break;
 
                 case WHAT_PROGRESS_VISIBLE:

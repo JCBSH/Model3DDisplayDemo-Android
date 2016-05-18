@@ -4,6 +4,8 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -76,6 +78,8 @@ public class Model3D {
     public static final int MULTI_THREAD = 1;
     public static int sMode = MULTI_THREAD;
 
+    private Handler mUiHandler;
+
 
 
 //    smallest x pos: -91.870   biggest x pos:  106.99
@@ -83,7 +87,9 @@ public class Model3D {
 //    smallest z pos:  173.777  biggest z pos:  253.40
 
     // Use to access and set the view transformation
-    public Model3D(Context context) {
+    public Model3D(Context context, Handler uiHandler) {
+
+        mUiHandler = uiHandler;
 
         float[] vertexArray = new float[MAX_NUM_OF_VERTEX * COORDS_PER_VERTEX];
         float[] colorArray = new float[MAX_NUM_OF_VERTEX * COLORS_PER_VERTEX];
@@ -145,6 +151,7 @@ public class Model3D {
                 InputStream in = context.getAssets().open("assassin.ply");
                 reader = new BufferedReader(new InputStreamReader(in));
                 String line = null;
+                long onePercentageVertexNum = MAX_NUM_OF_VERTEX/100;
                 while ((line = reader.readLine()) != null) {
                     // Line breaks are omitted and irrelevant
                     String[] strings = line.split(" ");
@@ -173,6 +180,11 @@ public class Model3D {
                         colorArray[i + 3] = 1.0f;
                         indicesArray[vertexCount] = vertexCount;
                         ++vertexCount;
+                        if (vertexCount % onePercentageVertexNum == 0) {
+                            Message bitmapMessage = mUiHandler.obtainMessage(Model3DFragment.WHAT_PROGRESS_PERCENTAGE,
+                                    (((vertexCount * 1.0)/MAX_NUM_OF_VERTEX) * 100));
+                            bitmapMessage.sendToTarget();
+                        }
                     }
                 }
             }
@@ -380,6 +392,9 @@ public class Model3D {
             mProcessedVertexCount += lines.size();
             --mTaskCount;
 
+            Message bitmapMessage = mUiHandler.obtainMessage(Model3DFragment.WHAT_PROGRESS_PERCENTAGE,
+                    (((mProcessedVertexCount * 1.0)/MAX_NUM_OF_VERTEX) * 100));
+            bitmapMessage.sendToTarget();
         }
 
         public void setArrays(float[] vertexArray, float[] colorArray, int[] indicesArray) {

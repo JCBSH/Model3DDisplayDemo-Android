@@ -32,13 +32,12 @@ public class Model3DActivity extends SingleFragmentActivity implements Model3DFr
         mProgressContainer = findViewById(R.id.progressContainer);
         mPercentageBar = (ProgressBar) findViewById(R.id.percentage_bar);
         mPercentageText = (TextView) findViewById(R.id.percentage_textView);
-
-//        mPercentageBar.setProgress(50)
     }
 
     @Override
     public void setPBarVisibility(boolean b) {
 
+        setProgressPercentage(0);
         if (b) {
             mProgressContainer.setVisibility(View.VISIBLE);
         } else {
@@ -47,9 +46,17 @@ public class Model3DActivity extends SingleFragmentActivity implements Model3DFr
 
     }
 
+
+
     @Override
     public boolean isPBarVisibility() {
         if (mProgressContainer.getVisibility() == View.VISIBLE) return true;
         return false;
+    }
+
+    @Override
+    public void setProgressPercentage(int p) {
+        mPercentageBar.setProgress(p);
+        mPercentageText.setText(p + "%");
     }
 }
